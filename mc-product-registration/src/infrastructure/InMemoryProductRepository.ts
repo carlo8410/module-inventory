@@ -11,4 +11,8 @@ export class InMemoryProductRepository implements IProductRepository {
   async findBySku(sku: string): Promise<Product | null> {
     return this.products.get(sku) || null;
   }
+
+  async findAll(): Promise<Product[]> {
+    return Array.from(this.products.values());
+  }
 }
