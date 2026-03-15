@@ -3,6 +3,12 @@ dist
 coverage
 .env
 .DS_Store
+
+# Allure
+allure-results/
+allure-report/
+.allure/
+
 # Logs
 logs
 *.log

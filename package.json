@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "test": "npm --prefix mc-product-registration run test:unit",
+    "test:acceptance": "npm --prefix mc-product-registration run test:acceptance",
+    "allure:generate": "allure generate ./mc-product-registration/allure-results --clean -o ./allure-report",
+    "allure:open": "allure open ./allure-report",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"**/*.{ts,js,json,md}\"",
@@ -18,6 +21,9 @@
     "@types/node": "25.5.0",
     "@typescript-eslint/eslint-plugin": "8.0.0",
     "@typescript-eslint/parser": "8.0.0",
+    "allure-commandline": "2.38.0",
+    "allure-cucumberjs": "3.6.0",
+    "allure-jest": "3.6.0",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.2.1",
@@ -25,6 +31,7 @@
     "prettier": "3.3.3",
     "ts-jest": "29.4.6",
     "ts-node": "10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "5.9.3"
   }
 }
