@@ -58,3 +58,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./allure-report
           publish_branch: gh-pages
+
+      - name: Run Acceptance Tests
+        if: always()
+        run: npm run test:acceptance
