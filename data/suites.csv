@@ -1,2 +1,2 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","5","should create a product with correct properties","Product Entity","2026-03-15","passed","2026-03-15","","","",""
+"","8","should create a product with correct properties","Product Entity","2026-03-15","passed","2026-03-15","","","",""
