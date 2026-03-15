@@ -1,0 +1,18 @@
+{
+  "name": "mc-product-registration",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cucumber.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:unit": "jest",
+    "test:acceptance": "cucumber-js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
