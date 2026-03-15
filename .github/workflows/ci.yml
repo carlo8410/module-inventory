@@ -47,6 +47,11 @@ jobs:
         run: npm run test
         continue-on-error: true
 
+      - name: Run Acceptance Tests
+        if: always()
+        run: npm run test:acceptance
+        continue-on-error: true
+
       - name: Generate Allure Report
         if: always()
         run: npm run allure:generate
@@ -59,6 +64,3 @@ jobs:
           publish_dir: ./allure-report
           publish_branch: gh-pages
 
-      - name: Run Acceptance Tests
-        if: always()
-        run: npm run test:acceptance
