@@ -54,7 +54,9 @@ jobs:
 
       - name: Generate Allure Report
         if: always()
-        run: npm run allure:generate
+        run: |
+          npm run posttest
+          npm run allure:generate
 
       - name: Deploy to GitHub Pages
         if: always()
