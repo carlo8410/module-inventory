@@ -9,9 +9,10 @@ import { ConstantHttpCode } from './common/ConstantHttpCode';
 export class ProductController {
   constructor(private readonly service: ProductRegistrationService) {}
 
-  async processProductRegistration(event: any): Promise<{ statusCode: number; body: string }> {
+  async processProductRegistration(event: unknown): Promise<{ statusCode: number; body: string }> {
     try {
-      await this.service.register(event);
+      const productData = event as { nombre: string; sku: string; precio: number };
+      await this.service.register(productData);
       return {
         statusCode: ConstantHttpCode.SUCCESS,
         body: JSON.stringify({ message: ConstantMessage.PRODUCT_REGISTERED_SUCCESSFULLY }),
