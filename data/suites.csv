@@ -1,20 +1,2 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"Como Vendedor
-  Quiero registrar la salida de productos
-  Para mantener el inventario sincronizado con las ventas","1","Intento de salida superior al stock disponible","","2026-03-15","broken","2026-03-15","","","",""
-"Como Almacenista
-  Quiero registrar el ingreso de nuevos productos
-  Para actualizar el stock tras una compra al proveedor","1","Incremento exitoso de stock","","2026-03-15","broken","2026-03-15","","","",""
-"Como Comprador
-  Quiero ser notificado cuando un producto llegue a su límite mínimo
-  Para gestionar el reabastecimiento a tiempo","13","Activación de umbral de stock mínimo","","2026-03-15","broken","2026-03-15","","","",""
-"","2","Registro exitoso de un producto único","","2026-03-15","passed","2026-03-15","","","",""
-"Como Vendedor
-  Quiero registrar la salida de productos
-  Para mantener el inventario sincronizado con las ventas","1","Salida exitosa de producto","","2026-03-15","broken","2026-03-15","","","",""
-"Como Vendedor o Administrador
-  Quiero ver la lista de productos y su stock actual
-  Para conocer la disponibilidad de artículos en tiempo real","1","Búsqueda de producto por SKU específico","","2026-03-15","broken","2026-03-15","","","",""
-"Como Vendedor o Administrador
-  Quiero ver la lista de productos y su stock actual
-  Para conocer la disponibilidad de artículos en tiempo real","1","Visualización de alerta por producto agotado","","2026-03-15","broken","2026-03-15","","","",""
+"","8","Registro exitoso de un producto único","","2026-06-17","passed","2026-06-17","","","",""
