@@ -10,8 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:unit": "jest",
     "test:acceptance": "cucumber-js",
-    "build": "esbuild src/infrastructure/index.ts --bundle --minify --platform=node --target=node20 --outfile=dist/index.js && npm run postbuild",
-    "build:lambda": "esbuild src/infrastructure/index.ts --bundle --minify --platform=node --target=node20 --outfile=dist/index.js",
+    "build": "esbuild src/index.ts --bundle --minify --platform=node --target=node20 --outfile=dist/index.js && npm run postbuild",
+    "build:lambda": "esbuild src/index.ts --bundle --minify --platform=node --target=node20 --outfile=dist/index.js",
     "postbuild": "cd dist && zip -r ../mc-product-registration.zip ."
   },
   "keywords": [],
