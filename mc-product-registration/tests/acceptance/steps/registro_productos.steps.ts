@@ -1,10 +1,10 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import * as assert from 'node:assert';
-import { ProductRegistrationService } from '@/domain/ProductRegistrationService';
-import { InMemoryProductRepository } from '@/infrastructure/InMemoryProductRepository';
+import { ProductRegistrationService } from '@/application/ProductRegistrationService';
+import { repository } from './common.steps';
+import { container } from '@/infrastructure/common/container';
 
-const repository = new InMemoryProductRepository();
-const service = new ProductRegistrationService(repository);
+const service = container.resolve(ProductRegistrationService);
 
 let lastException: Error | null = null;
 let registrationConfirmed = false;

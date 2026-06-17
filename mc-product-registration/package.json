@@ -2,20 +2,20 @@
   "name": "mc-product-registration",
   "version": "1.0.0",
   "description": "",
-  "main": "cucumber.js",
+  "main": "index.ts",
   "directories": {
     "test": "tests"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:unit": "jest",
-    "test:acceptance": "cucumber-js"
+    "test:acceptance": "cucumber-js",
+    "build": "esbuild src/infrastructure/index.ts --bundle --minify --platform=node --target=node20 --outfile=dist/index.js && npm run postbuild",
+    "build:lambda": "esbuild src/infrastructure/index.ts --bundle --minify --platform=node --target=node20 --outfile=dist/index.js",
+    "postbuild": "cd dist && zip -r ../mc-product-registration.zip ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
-  "devDependencies": {
-    "allure-jest": "^3.6.0"
-  }
+  "type": "commonjs"
 }

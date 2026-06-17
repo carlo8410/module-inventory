@@ -1,0 +1,112 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "MC Product Registration API",
+    "version": "1.0.0",
+    "description": "API for registering products in the inventory system via AWS Lambda."
+  },
+  "paths": {
+    "/register-new-product": {
+      "post": {
+        "summary": "register-new-product",
+        "description": "The main entry point for the Lambda function. Expects an action-payload structure.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "message": "Product registered successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid action",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Unknown action: foo"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal error"
+                }
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "AWS_LAMBDA_ARN_PREFIX:AWS_STACK_PREFIX-mc-product-registration/invocations",
+          "passthroughBehavior": "when_no_match",
+          "payloadFormatVersion": "2.0"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProductPayload": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Name of the product."
+          },
+          "sku": {
+            "type": "string",
+            "description": "Unique Stock Keeping Unit (SKU)."
+          },
+          "precio": {
+            "type": "number",
+            "description": "Price of the product."
+          }
+        },
+        "required": ["nombre", "sku", "precio"]
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

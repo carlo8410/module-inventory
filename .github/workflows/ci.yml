@@ -10,12 +10,17 @@ on:
       - main
       - master
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     permissions:
       contents: write
+      id-token: write
 
     strategy:
       matrix:
@@ -66,3 +71,109 @@ jobs:
           publish_dir: ./allure-report
           publish_branch: gh-pages
 
+      - name: Install esbuild
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        run: npm --prefix mc-product-registration install --save-dev esbuild
+
+      - name: Bundle with esbuild
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        run: npm --prefix mc-product-registration run build:lambda
+
+      - name: Package for Lambda (ZIP)
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        run: |
+          cd mc-product-registration
+          zip -j ../lambda.zip dist/index.js
+
+      - name: Upload Lambda ZIP Artifact
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-zip
+          path: lambda.zip
+
+  deploy-canary:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      new_version: ${{ steps.publish.outputs.version }}
+    steps:
+      - name: Download Lambda ZIP Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-zip
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
+
+      - name: Publish New Version
+        id: publish
+        run: |
+          VERSION=$(aws lambda update-function-code \
+            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+            --zip-file fileb://lambda.zip \
+            --publish \
+            --query 'Version' --output text)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Wait for Lambda update
+        run: |
+          aws lambda wait function-updated \
+            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }}
+
+      - name: Deploy Canary (10%)
+        run: |
+          NEW_VERSION=${{ steps.publish.outputs.version }}
+
+          # Obtenemos la versión actual del alias fixed
+          CURRENT_VERSION=$(aws lambda get-alias \
+            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+            --name fixed \
+            --query 'FunctionVersion' --output text)
+
+          echo "Nueva versión: $NEW_VERSION | Versión Actual: $CURRENT_VERSION"
+
+          # Si la versión actual es igual a la nueva, no aplicamos pesos (ya está promocionada)
+          if [ "$CURRENT_VERSION" = "$NEW_VERSION" ]; then
+            echo "La versión actual ya es la versión nueva. Omitiendo routing config."
+          else
+            # Aplicamos el 10% de peso a la nueva versión
+            aws lambda update-alias \
+              --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+              --name fixed \
+              --routing-config "{\"AdditionalVersionWeights\":{\"$NEW_VERSION\":0.1}}"
+          fi
+
+  promote-canary:
+    needs: deploy-canary
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    environment: production
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
+
+      - name: Full Traffic Shift (100%)
+        run: |
+          NEW_VERSION=${{ needs.deploy-canary.outputs.new_version }}
+
+          echo "Promocionando la versión $NEW_VERSION al 100% del tráfico."
+
+          aws lambda update-alias \
+            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+            --name fixed \
+            --function-version "$NEW_VERSION" \
+            --routing-config "{\"AdditionalVersionWeights\":{}}"

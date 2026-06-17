@@ -5,7 +5,7 @@ const resultsDir = 'mc-product-registration/allure-results';
 
 // Asegurarse de que la carpeta existe
 if (!fs.existsSync(resultsDir)) {
-    fs.mkdirSync(resultsDir);
+  fs.mkdirSync(resultsDir);
 }
 
 const envData = `
