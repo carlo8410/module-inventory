@@ -128,6 +128,37 @@ jobs:
           aws lambda wait function-updated \
             --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }}
 
+      - name: Update API Gateway OpenAPI Spec
+        run: |
+          # 1. Get AWS Account ID
+          AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+          AWS_REGION="${{ secrets.AWS_REGION || 'us-east-1' }}"
+          
+          # 2. Construct Lambda Invoke ARN for the 'fixed' alias
+          LAMBDA_INVOKE_ARN="arn:aws:apigateway:${AWS_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:${{ secrets.LAMBDA_FUNCTION_NAME }}:fixed/invocations"
+          
+          # 3. Get API Gateway ID dynamically by name
+          API_ID=$(aws apigateway get-rest-apis --query "items[?name=='mc-inventory-api'].id" --output text)
+          
+          # 4. Resolve template variables and remove payloadFormatVersion in-place via Node.js
+          export LAMBDA_INVOKE_ARN
+          node -e "
+          const fs = require('fs');
+          const doc = JSON.parse(fs.readFileSync('api-doc.json', 'utf8'));
+          
+          const integration = doc.paths['/register-new-product'].post['x-amazon-apigateway-integration'];
+          integration.uri = process.env.LAMBDA_INVOKE_ARN;
+          delete integration.payloadFormatVersion;
+          
+          fs.writeFileSync('api-doc-resolved.json', JSON.stringify(doc, null, 2));
+          "
+          
+          # 5. Import/overwrite the OpenAPI spec into API Gateway
+          aws apigateway put-rest-api --rest-api-id $API_ID --mode overwrite --body fileb://api-doc-resolved.json
+          
+          # 6. Deploy the changes to the Stage 'dev'
+          aws apigateway create-deployment --rest-api-id $API_ID --stage-name dev
+
       - name: Deploy Canary (10%)
         run: |
           NEW_VERSION=${{ steps.publish.outputs.version }}
