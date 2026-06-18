@@ -15,13 +15,19 @@ export class ProductController {
       await this.service.register(productData);
       return {
         statusCode: ConstantHttpCode.SUCCESS,
-        body: JSON.stringify({ message: ConstantMessage.PRODUCT_REGISTERED_SUCCESSFULLY }),
+        body: JSON.stringify({
+          message: ConstantMessage.PRODUCT_REGISTERED_SUCCESSFULLY,
+          statuStatusCode: ConstantHttpCode.SUCCESS,
+        }),
       };
     } catch (error) {
       const message = error instanceof Error ? error.message : ConstantMessage.INTERNAL_ERROR;
       return {
         statusCode: ConstantHttpCode.INTERNAL_SERVER_ERROR,
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({
+          message,
+          statuStatusCode: ConstantHttpCode.INTERNAL_SERVER_ERROR,
+        }),
       };
     }
   }
