@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { injectable, singleton } from 'tsyringe';
+import { inject, injectable, singleton } from 'tsyringe';
 import { ProductRegistrationService } from '../application/ProductRegistrationService';
 import { ConstantMessage } from './common/ConstantMessage';
 import { ConstantHttpCode } from './common/ConstantHttpCode';
@@ -7,7 +7,9 @@ import { ConstantHttpCode } from './common/ConstantHttpCode';
 @injectable()
 @singleton()
 export class ProductController {
-  constructor(private readonly service: ProductRegistrationService) {}
+  constructor(
+    @inject(ProductRegistrationService) private readonly service: ProductRegistrationService,
+  ) {}
 
   async processProductRegistration(event: unknown): Promise<{ statusCode: number; body: string }> {
     try {
