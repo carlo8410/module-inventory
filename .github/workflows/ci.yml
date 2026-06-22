@@ -141,17 +141,11 @@ jobs:
           LAMBDA_INVOKE_ARN="arn:aws:apigateway:${AWS_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:${{ secrets.LAMBDA_FUNCTION_NAME }}:fixed/invocations"
           
           # 3. Get API Gateway ID dynamically by name
-          echo "=== DEBUG INFO ==="
-          echo "AWS Region used in CLI: $AWS_REGION"
-          echo "Listing all REST APIs in region $AWS_REGION:"
-          aws apigateway get-rest-apis --region $AWS_REGION
-          echo "==================="
-          
-          API_ID=$(aws apigateway get-rest-apis --region $AWS_REGION --query "items[?name=='mc-inventory-api'].id" --output text)
+          API_ID=$(aws apigateway get-rest-apis --region $AWS_REGION --query "items[?name=='MC Product Registration API'].id" --output text)
           echo "Resolved API_ID: '$API_ID'"
           
           if [ -z "$API_ID" ] || [ "$API_ID" = "None" ]; then
-            echo "ERROR: Could not resolve API Gateway ID for name 'mc-inventory-api' in region $AWS_REGION"
+            echo "ERROR: Could not resolve API Gateway ID for name 'MC Product Registration API' in region $AWS_REGION"
             exit 1
           fi
           
