@@ -14,6 +14,7 @@ export class ProductController {
   async processProductRegistration(event: unknown): Promise<{ statusCode: number; body: string }> {
     try {
       const productData = event as { nombre: string; sku: string; precio: number };
+      console.log('Product registration request received:', JSON.stringify(productData));
       await this.service.register(productData);
       return {
         statusCode: ConstantHttpCode.SUCCESS,
